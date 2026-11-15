@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="gu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ચુકવણી પુરાવો · ચામુંડા યુવક મંડળ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#111;--sub:#666;--line:#e3e3e3;--card:#fff;--pk:#ef2a5b;--ok:#1b7a45;--bad:#b3261e}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--fg:#f2f2f2;--sub:#a8a8a8;--line:#2a2a2a;--card:#121212}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 "Noto Sans Gujarati",system-ui,sans-serif}
+header{background:var(--pk);color:#fff;padding:16px;font-weight:600;font-size:18px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+header small{display:block;font-weight:400;font-size:13px;opacity:.9}
+header button{background:none;border:1px solid #fff9;color:#fff;border-radius:999px;padding:4px 12px;font-size:13px}
+main{max-width:520px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{font-size:17px;margin:0 0 6px}
+p{margin:6px 0}
+label{display:block;font-size:13px;color:var(--sub);margin:14px 0 4px}
+input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit}
+button{font:inherit;cursor:pointer}
+.btn{display:block;width:100%;padding:13px;border:0;border-radius:999px;background:var(--pk);color:#fff;font-weight:600;margin-top:16px}
+.btn:disabled{opacity:.5}
+.btn2{background:none;border:1px solid var(--line);color:var(--fg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;background:var(--bg);color:var(--fg)}
+.chip.on{background:var(--pk);border-color:var(--pk);color:#fff}
+.chip[disabled]{opacity:.5;cursor:default}
+.msg{padding:10px 12px;border-radius:10px;font-size:14px;margin-top:10px}
+.err{background:#fdecea;color:var(--bad)}
+.okm{background:#e6f6ec;color:var(--ok)}
+.warn{background:#fff3e0;color:#7a4a00}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.sub{color:var(--sub);font-size:13px}
+.st{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--line)}
+.cl{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <div>ચામુંડા યુવક મંડળ · અશોકગઢ<small>ચુકવણી પુરાવો ભરો</small></div>
+  <button id="out" hidden>લૉગઆઉટ</button>
+</header>
+<main>
+  <div id="warn" class="msg warn" hidden>
+    આ WhatsApp ના અંદરના બ્રાઉઝરમાં Google લૉગિન અટકી શકે છે.
+    <button class="btn btn2" id="chrome" style="margin-top:8px">Chrome માં ખોલો</button>
+  </div>
+
+  <section id="login" class="card">
+    <h2>પહેલા લૉગિન કરો</h2>
+    <p class="sub">મંડળમાં નોંધાયેલા તમારા Gmail થી લૉગિન કરો. નામ આપોઆપ આવી જશે.</p>
+    <button class="btn" id="gbtn">Google થી લૉગિન</button>
+    <div id="lerr"></div>
+  </section>
+
+  <section id="noaccess" class="card" hidden>
+    <h2>પ્રવેશ નથી</h2>
+    <p>આ ઇમેઇલ મંડળની યાદીમાં નથી, અથવા પરવાનગી મળી નથી. ખજાનચી/એડમિનને તમારી Gmail સભ્યની વિગતમાં ઉમેરવા કહો.</p>
+    <p class="sub" id="who"></p>
+  </section>
+
+  <section id="form" hidden>
+    <div class="card">
+      <div class="sub" id="hi"></div>
+      <div class="row">
+        <div><label>મહિનો</label><select id="mon"></select></div>
+        <div><label>વર્ષ</label><select id="yr"></select></div>
+      </div>
+      <label>કોના માટે ભર્યા? (5 સુધી)</label>
+      <div class="chips" id="chips"></div>
+      <label>કુલ ચૂકવેલ રકમ (₹)</label>
+      <input id="amt" type="number" inputmode="numeric" min="1">
+      <div class="sub" id="amtn"></div>
+      <label>ચુકવણી તારીખ</label>
+      <input id="dt" type="date">
+      <label>12 અંકનો UTR / Reference નંબર *</label>
+      <input id="utr" inputmode="numeric" maxlength="12" placeholder="087838786316">
+      <label>સ્ક્રીનશૉટ (વૈકલ્પિક)</label>
+      <input id="img" type="file" accept="image/*">
+      <div class="sub" id="imn"></div>
+      <div id="ferr"></div>
+      <button class="btn" id="go">મોકલો</button>
+    </div>
+    <div class="card" id="mine" hidden><h2>તમારા દાવા</h2><div id="mlist"></div></div>
+  </section>
+
+  <section id="done" class="card" hidden>
+    <h2>આભાર!</h2>
+    <p>તમારી વિગત મોકલાઈ ગઈ. ખજાનચી/એડમિન ચકાસીને મંજૂર કરશે, પછી તમારું નામ "જમા" માં દેખાશે.</p>
+    <button class="btn" id="again">બીજું ભરો</button>
+  </section>
+</main>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,collection,doc,getDoc,getDocs,query,where,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+/* ===== અહીં Firebase ની વેબ config પેસ્ટ કરો (Project settings → Your apps → Web) ===== */
+const CFG = {
+  apiKey: "AIzaSyDYnDzX_E5IlwUQksor4DLpExc95v0KSBw",
+  authDomain: "gen-lang-client-0285254829.firebaseapp.com",
+  projectId: "gen-lang-client-0285254829",
+  appId: "1:312110058319:web:e78bc174b8e9ee728d933a"
+};
+/* ==================================================================================== */
+const DB_ID = "ai-studio-android-c6d46dfc-c1f8-4fb9-9348-fb34ac564f3f";
+const MONTHS = ["જાન્યુઆરી","ફેબ્રુઆરી","માર્ચ","એપ્રિલ","મે","જૂન","જુલાઈ","ઑગસ્ટ","સપ્ટેમ્બર","ઑક્ટોબર","નવેમ્બર","ડિસેમ્બર"];
+
+const app = initializeApp(CFG);
+const auth = getAuth(app);
+const db = getFirestore(app, DB_ID);
+const base = (n) => collection(db, "mandals", "mandal", n);
+const $ = (id) => document.getElementById(id);
+const S = {email:"", me:{id:0,name:""}, members:[], pays:[], claims:[], fee:200, sel:new Set(), amtEdited:false};
+
+function view(name){ ["login","noaccess","form","done"].forEach(i => $(i).hidden = i !== name); }
+function note(id, text, cls){ $(id).innerHTML = text ? `<div class="msg ${cls||"err"}"></div>` : ""; if(text) $(id).firstChild.textContent = text; }
+
+if (/FBAN|FBAV|Instagram|WhatsApp|; wv\)/i.test(navigator.userAgent)) $("warn").hidden = false;
+$("chrome").onclick = () => { location.href = "intent://" + location.host + location.pathname + location.search + "#Intent;scheme=https;package=com.android.chrome;end"; };
+
+$("gbtn").onclick = async () => {
+  note("lerr","");
+  const p = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, p); }
+  catch (e) {
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") await signInWithRedirect(auth, p);
+    else if (e.code !== "auth/popup-closed-by-user") note("lerr", "લૉગિન ન થયું: " + (e.code || e.message));
+  }
+};
+$("out").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, (u) => { $("out").hidden = !u; if (u) boot(u); else view("login"); });
+
+async function boot(u){
+  S.email = (u.email || "").toLowerCase();
+  $("who").textContent = S.email;
+  try {
+    const a = await getDoc(doc(base("authorized_emails"), S.email));
+    S.me = a.exists() ? {id:Number(a.data().memberId), name:a.data().memberName || u.displayName || S.email} : {id:0, name:u.displayName || S.email};
+    const [m,p,s,c] = await Promise.all([
+      getDocs(base("members")), getDocs(base("payments")), getDocs(base("settings")),
+      getDocs(query(base("payment_claims"), where("submittedByEmail","==",S.email)))
+    ]);
+    S.members = m.docs.map(d => d.data()).filter(x => x.isActive !== false).sort((x,y) => String(x.name).localeCompare(String(y.name),"gu"));
+    S.pays = p.docs.map(d => d.data());
+    S.claims = c.docs.map(d => d.data());
+    const fee = s.docs.map(d => d.data()).find(x => x.key === "monthly_fee");
+    S.fee = fee && Number(fee.value) > 0 ? Number(fee.value) : 200;
+  } catch (e) {
+    if (e.code === "permission-denied") { view("noaccess"); return; }
+    view("login"); note("lerr", "ડેટા વાંચી શકાયો નહીં: " + (e.code || e.message)); return;
+  }
+  initForm(); view("form");
+}
+
+function initForm(){
+  const now = new Date();
+  $("hi").textContent = "લૉગિન: " + S.me.name;
+  $("mon").innerHTML = MONTHS.map((n,i) => `<option value="${i+1}">${n}</option>`).join("");
+  $("yr").innerHTML = [now.getFullYear()-1, now.getFullYear(), now.getFullYear()+1].map(y => `<option>${y}</option>`).join("");
+  $("mon").value = now.getMonth()+1; $("yr").value = now.getFullYear();
+  $("dt").value = now.toISOString().slice(0,10);
+  $("utr").value = ""; $("img").value = ""; $("imn").textContent = "";
+  note("ferr",""); S.amtEdited = false; S.sel = new Set();
+  const paid = paidSet(); if (S.me.id && !paid.has(S.me.id)) S.sel.add(S.me.id);
+  drawChips(); drawMine();
+}
+$("mon").onchange = $("yr").onchange = () => { S.sel = new Set(); S.amtEdited = false; drawChips(); };
+
+const cur = () => ({m:+$("mon").value, y:+$("yr").value});
+function paidSet(){ const {m,y} = cur(); return new Set(S.pays.filter(p => p.month===m && p.year===y).map(p => Number(p.memberId))); }
+function pendSet(){ const {m,y} = cur(); const s = new Set(); S.claims.filter(c => c.status==="PENDING" && c.month===m && c.year===y).forEach(c => c.memberIds.forEach(i => s.add(Number(i)))); return s; }
+
+function drawChips(){
+  const paid = paidSet(), pend = pendSet();
+  $("chips").innerHTML = "";
+  S.members.forEach(mm => {
+    const id = Number(mm.id), b = document.createElement("button");
+    b.type = "button"; b.className = "chip" + (S.sel.has(id) ? " on" : "");
+    const tag = paid.has(id) ? " · જમા" : pend.has(id) ? " · ચકાસણી બાકી" : "";
+    b.textContent = mm.name + tag;
+    if (paid.has(id) || pend.has(id)) { b.disabled = true; S.sel.delete(id); }
+    b.onclick = () => {
+      if (S.sel.has(id)) S.sel.delete(id);
+      else if (S.sel.size >= 5) { note("ferr","એક દાવામાં વધુમાં વધુ 5 સભ્યો."); return; }
+      else S.sel.add(id);
+      note("ferr",""); drawChips();
+    };
+    $("chips").appendChild(b);
+  });
+  if (!S.amtEdited) $("amt").value = S.sel.size ? S.fee * S.sel.size : "";
+  $("amtn").textContent = `નિર્ધારિત: ₹${S.fee} × ${S.sel.size} = ₹${S.fee * S.sel.size}`;
+}
+$("amt").oninput = () => { S.amtEdited = true; };
+$("utr").oninput = () => { $("utr").value = $("utr").value.replace(/\D/g,"").slice(0,12); };
+
+function drawMine(){
+  const list = [...S.claims].sort((a,b) => (b.createdAt?.toMillis?.()||0) - (a.createdAt?.toMillis?.()||0)).slice(0,5);
+  $("mine").hidden = !list.length;
+  const L = {PENDING:"ચકાસણી બાકી", APPROVED:"મંજૂર", REJECTED:"નામંજૂર", REVOKED:"રદ થયેલ"};
+  $("mlist").innerHTML = "";
+  list.forEach(c => {
+    const d = document.createElement("div"); d.className = "cl";
+    const l = document.createElement("span"); l.textContent = `${MONTHS[c.month-1]} ${c.year} · ₹${c.amount} · ${(c.memberNames||[]).join(", ")}`;
+    const s = document.createElement("span"); s.className = "st"; s.textContent = L[c.status] || c.status;
+    d.append(l, s); $("mlist").appendChild(d);
+  });
+}
+
+async function shrink(file){
+  let bmp;
+  try { bmp = await createImageBitmap(file, {imageOrientation:"from-image"}); }
+  catch (e) { try { bmp = await createImageBitmap(file); } catch (e2) { throw new Error("ફોટો ખોલી શકાયો નથી"); } }
+  let sc = Math.min(1, 800 / Math.max(bmp.width, bmp.height));
+  for (let i = 0; i < 8; i++) {
+    const c = document.createElement("canvas"); c.width = Math.round(bmp.width*sc); c.height = Math.round(bmp.height*sc);
+    const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(bmp,0,0,c.width,c.height);
+    for (const q of [0.7,0.55,0.4]) { const b64 = c.toDataURL("image/jpeg", q).split(",")[1]; if (b64.length <= 190000) return b64; }
+    sc *= 0.8;
+  }
+  throw new Error("ફોટો ખૂબ મોટો છે");
+}
+
+$("go").onclick = async () => {
+  note("ferr","");
+  const {m,y} = cur(), ids = [...S.sel], utr = $("utr").value.trim(), amount = Number($("amt").value);
+  if (!ids.length) return note("ferr","ઓછામાં ઓછા એક સભ્ય પસંદ કરો.");
+  if (!(amount > 0)) return note("ferr","રકમ લખો.");
+  if (!/^[0-9]{12}$/.test(utr)) return note("ferr","UTR બરાબર 12 અંકનો હોવો જોઈએ.");
+  if (S.pays.some(p => String(p.transactionRef||"").includes(utr)) || S.claims.some(c => c.utr === utr && c.status !== "REJECTED" && c.status !== "REVOKED"))
+    return note("ferr","આ UTR પહેલેથી નોંધાયેલો છે.");
+  const btn = $("go"); btn.disabled = true; btn.textContent = "મોકલાય છે…";
+  try {
+    const data = {
+      memberIds: ids, memberNames: ids.map(i => S.members.find(x => Number(x.id) === i).name),
+      month: m, year: y, amount, utr,
+      paidDate: new Date($("dt").value + "T12:00:00").getTime(),
+      status: "PENDING", submittedByEmail: S.email, submittedByName: String(S.me.name).slice(0,120) || S.email,
+      source: "web", createdAt: serverTimestamp(),
+      reviewedBy: "", reviewedAt: null, rejectReason: "", approvedPaymentIds: [], revokedBy: "", revokedAt: null, revokeReason: ""
+    };
+    const f = $("img").files[0];
+    if (f) { $("imn").textContent = "ફોટો નાનો કરાય છે…"; data.imageBase64 = await shrink(f); }
+    const ref = doc(base("payment_claims"));
+    await setDoc(ref, data);
+    S.claims.push({...data, createdAt:{toMillis:() => Date.now()}});
+    view("done");
+  } catch (e) {
+    note("ferr", e.code === "permission-denied" ? "પરવાનગી નથી. ઇમેઇલ નોંધાયેલી છે અને UTR/રકમ સાચા છે?" : (e.message || e.code || "ભૂલ"));
+  } finally { btn.disabled = false; btn.textContent = "મોકલો"; $("imn").textContent = ""; }
+};
+$("again").onclick = () => { initForm(); view("form"); };
+</script>
+</body>
+</html>
